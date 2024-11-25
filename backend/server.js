@@ -1,16 +1,17 @@
 import express from 'express';
 import mysql from 'mysql2';
-import cors from 'cors';  
+import cors from 'cors';
+import path from 'path'; 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../build', 'index.html'));
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 // MySQL 연결
@@ -21,7 +22,6 @@ const connection = mysql.createConnection({
     database: 'note'
 });
 
-// MySQL 연결
 connection.connect((err) => {
     if (err) {
         console.error('MySQL 연결 오류:', err.stack);
@@ -32,35 +32,35 @@ connection.connect((err) => {
 
 // 데이터 조회
 app.get('/', (req, res) => {
-    const query = 'SELECT * FROM noteProject'; 
+    const query = 'SELECT * FROM noteProject';
     connection.query(query, (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).send('Failed to fetch notes');
-      }
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).send('Failed to fetch notes');
+        }
 
-      // 날짜를 YYYY-MM-DD 형식으로 포맷
-      const formattedResults = results.map(note => {
-          const date = new Date(note.date);
-          note.date = date.toISOString().split('T')[0]; // 날짜만 반환 (시간 제외)
-          return note;
-      });
+        // 날짜를 YYYY-MM-DD 형식으로 포맷
+        const formattedResults = results.map(note => {
+            const date = new Date(note.date);
+            note.date = date.toISOString().split('T')[0]; // 날짜만 반환 (시간 제외)
+            return note;
+        });
 
-      res.json(formattedResults); // 포맷된 결과 반환
+        res.json(formattedResults); // 포맷된 결과 반환
     });
 });
 
 // 데이터 삭제
 app.delete('/delete-note/:id', (req, res) => {
     const noteId = req.params.id;
-  
+
     const query = 'DELETE FROM noteProject WHERE id = ?';
     connection.query(query, [noteId], (err, result) => {
-      if (err) {
-        console.error('삭제 오류:', err);
-        return res.status(500).json({ error: '삭제 실패', details: err });
-      }
-      res.status(200).json({ message: '노트 삭제 성공', id: noteId });
+        if (err) {
+            console.error('삭제 오류:', err);
+            return res.status(500).json({ error: '삭제 실패', details: err });
+        }
+        res.status(200).json({ message: '노트 삭제 성공', id: noteId });
     });
 });
 
@@ -70,37 +70,35 @@ app.post('/add-note', (req, res) => {
 
     const query = 'INSERT INTO noteProject (title, content, date) VALUES (?, ?, ?)';
     connection.query(query, [title, content, date], (err, result) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).send('Failed to insert data');
-    }
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).send('Failed to insert data');
+        }
 
-    const newNote = {
-        id: result.insertId,
-        title,
-        content,
-        date,
-    };
+        const newNote = {
+            id: result.insertId,
+            title,
+            content,
+            date,
+        };
 
-    res.status(201).json(newNote);
+        res.status(201).json(newNote);
     });
 });
 
 // 데이터 수정
 app.put('/edit-notes/:id', (req, res) => {
-    const { id } = req.params; 
-    const { title, content, date } = req.body; 
-    
-    // SQL 쿼리에서 , 위치 수정
+    const { id } = req.params;
+    const { title, content, date } = req.body;
+
     const query = 'UPDATE noteProject SET title = ?, content = ?, date = ? WHERE id = ?';
-  
+
     connection.query(query, [title, content, date, id], (err, result) => {
-      if (err) {
-        console.log('수정 오류:', err);
-        return res.status(500).send('Failed to update note');
-      }
-  
-        // 수정이 성공하면 수정된 데이터 반환
+        if (err) {
+            console.log('수정 오류:', err);
+            return res.status(500).send('Failed to update note');
+        }
+
         res.status(200).json({
             id,
             title,
@@ -116,7 +114,7 @@ app.listen(PORT, () => {
     console.log(`서버가 ${PORT} 포트에서 실행 중입니다.`);
 });
 
-// 서버 종료 시 연결 종료 (서버 종료 전에 연결 종료)
+// 서버 종료 시 연결 종료
 process.on('SIGINT', () => {
     connection.end((err) => {
         if (err) {
