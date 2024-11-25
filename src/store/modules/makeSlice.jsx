@@ -13,7 +13,7 @@ export const fetchNotes = createAsyncThunk(
 const initialState = {
   notes: [], 
   error: null, 
-  noteData: [  ], 
+  noteData: [ ], 
   filteredData: [],
   current: [],
 };
@@ -32,7 +32,20 @@ export const makeListSlice = createSlice({
       state.noteData.push(newNote);
     },
     onDel: (state, action) => {
-      state.noteData = state.noteData.filter(item => item.id !== action.payload);
+        const noteId = action.payload;
+        
+        // 서버로 DELETE 요청 보내기
+        axios
+          .delete(`http://localhost:3000/delete-note/${noteId}`)
+          .then((response) => {
+            console.log(response.data);  
+            // state.noteData = state.noteData.filter((item) => item.id !== noteId);
+            alert('삭제 되었습니다!');
+          })
+          .catch((error) => {
+            console.error('삭제 오류:', error);
+            alert('서버에서 삭제 오류가 발생했습니다.');
+          });
     },
     onEdit: (state, action) => {
       const noteId = action.payload.id;

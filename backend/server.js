@@ -27,10 +27,24 @@ connection.connect((err) => {
 app.get('/', (req, res) => {
     connection.query('SELECT * FROM noteProject', (err, results) => {
         if (err) {
-            console.error('쿼리 실행 오류:', err); // 오류 로그 출력
+            console.error('쿼리 실행 오류:', err); 
             return res.status(500).json({ error: '쿼리 실행 오류', details: err }); // 오류 세부사항 반환
         }
-        res.json(results); // 조회된 데이터 반환
+        res.json(results); 
+    });
+});
+
+//데이터 삭제
+app.delete('/delete-note/:id', (req, res) => {
+    const noteId = req.params.id;
+  
+    const query = 'DELETE FROM noteProject WHERE id = ?';
+    connection.query(query, [noteId], (err, result) => {
+      if (err) {
+        console.error('삭제 오류:', err);
+        return res.status(500).json({ error: '삭제 실패', details: err });
+      }
+      res.status(200).json({ message: '노트 삭제 성공', id: noteId });
     });
 });
 
