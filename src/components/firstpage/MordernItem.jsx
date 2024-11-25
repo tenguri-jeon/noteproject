@@ -11,14 +11,18 @@ const MordernItem = ({...item}) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const clickElment = () => {
-        navigate(`/edit/${id}`)
-        dispatch(onCurrent(item))
+        if(id === '' ){
+            alert('검색된 결과가 없습니다. 다시 검색 해 주세요')
+        }else{
+            navigate(`/edit/${id}`)
+            dispatch(onCurrent(item))
+        }
     }
 
     return (
         <MordernItemComponents onClick={clickElment}  theme={isDarkMode ? darkTheme : lightTheme}>
             <div className="title-wrap">
-                <strong>{id}]</strong>
+                <strong>{id}</strong>
                 <h3>{title}</h3>
             </div>
             <p>{date}</p>

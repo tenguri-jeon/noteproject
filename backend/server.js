@@ -7,6 +7,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static(path.join(__dirname, '../build')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../build', 'index.html'));
+});
+
 // MySQL 연결
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -24,7 +30,7 @@ connection.connect((err) => {
     console.log('MySQL에 연결되었습니다! ID:', connection.threadId);
 });
 
-
+// 데이터 조회
 app.get('/', (req, res) => {
     const query = 'SELECT * FROM noteProject'; 
     connection.query(query, (err, results) => {
@@ -32,11 +38,19 @@ app.get('/', (req, res) => {
         console.error('Database error:', err);
         return res.status(500).send('Failed to fetch notes');
       }
-    res.json(results); 
+
+      // 날짜를 YYYY-MM-DD 형식으로 포맷
+      const formattedResults = results.map(note => {
+          const date = new Date(note.date);
+          note.date = date.toISOString().split('T')[0]; // 날짜만 반환 (시간 제외)
+          return note;
+      });
+
+      res.json(formattedResults); // 포맷된 결과 반환
     });
 });
 
-//데이터 삭제
+// 데이터 삭제
 app.delete('/delete-note/:id', (req, res) => {
     const noteId = req.params.id;
   
@@ -74,11 +88,9 @@ app.post('/add-note', (req, res) => {
 
 // 데이터 수정
 app.put('/edit-notes/:id', (req, res) => {
-    const { id } = req.params; // URL에서 ID 받기
-    const { title, content, date } = req.body; // 수정할 데이터 받기
-  
-    console.log(title, content, date); // 데이터 확인
-  
+    const { id } = req.params; 
+    const { title, content, date } = req.body; 
+    
     // SQL 쿼리에서 , 위치 수정
     const query = 'UPDATE noteProject SET title = ?, content = ?, date = ? WHERE id = ?';
   
@@ -88,18 +100,15 @@ app.put('/edit-notes/:id', (req, res) => {
         return res.status(500).send('Failed to update note');
       }
   
-      // 수정이 성공하면 수정된 데이터 반환
-      res.status(200).json({
-        id,
-        title,
-        content,
-        date,
-      });
+        // 수정이 성공하면 수정된 데이터 반환
+        res.status(200).json({
+            id,
+            title,
+            content,
+            date,
+        });
     });
-  });
-  
-
-
+});
 
 // 서버 실행
 const PORT = process.env.PORT || 3000;

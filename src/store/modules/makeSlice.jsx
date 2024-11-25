@@ -1,12 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
 
-// 데이터 가져오기
 export const fetchNotes = createAsyncThunk(
   'notes/fetchNotes', 
   async () => {
-    const response = await axios.get('http://localhost:3000'); // MySQL 데이터 가져오기
+    const response = await axios.get('http://localhost:3000'); 
     return response.data; 
   }
 );
@@ -44,7 +42,6 @@ export const makeListSlice = createSlice({
     onDel: (state, action) => {
         const noteId = action.payload;
         
-        // 서버로 DELETE 요청 보내기
         axios
           .delete(`http://localhost:3000/delete-note/${noteId}`)
           .then((response) => {
@@ -71,10 +68,17 @@ export const makeListSlice = createSlice({
       state.current = action.payload;
     },
     onSearch: (state, action) => {
-      const searchTerm = action.payload.toLowerCase();
-      state.filteredData = state.noteData.filter(item =>
-        item.title.toLowerCase().includes(searchTerm)
-      );
+        const searchTerm = action.payload.toLowerCase(); 
+        if (searchTerm === '') {
+            state.filteredData = state.notes;  
+        } else{
+            state.filteredData = state.notes.filter(item =>
+                item.title.toLowerCase().includes(searchTerm)  
+            );
+            if(state.filteredData.length === 0){
+                state.filteredData = [{ id: '', title: "검색 결과가 없습니다.", content: "", date: "" }];
+            }
+        }
     },
     onsort: (state, action) => {
       if (action.payload !== '') {

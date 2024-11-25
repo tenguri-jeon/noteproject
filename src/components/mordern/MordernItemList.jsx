@@ -5,21 +5,25 @@ import { fetchNotes } from '../../store/modules/makeSlice';
 
 const MordernItemList = () => {
     const dispatch = useDispatch();
-    const {notes ,noteData ,error} = useSelector((state) => state.makenote)
-    const {filteredData} = useSelector(state => state.makenote)
+    const { notes, filteredData, error } = useSelector((state) => state.makenote);  // redux에서 필터링된 데이터 가져오기
+    const searchTerm = useSelector((state) => state.makenote.searchTerm);  // searchTerm을 상태에서 가져오기
 
-    useEffect(()=>{
-        dispatch(fetchNotes());
-    },[dispatch]);
+    const notesToDisplay = filteredData.length > 0 || searchTerm === '' ? filteredData : notes;
+
+    useEffect(() => {
+        dispatch(fetchNotes());  
+    }, [dispatch]);
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div>Error: {error}</div>;  
     }
 
     return (
-        <ul className='notelist'>
+        <ul className="notelist">
             {
-                notes.map((item) => <MordernItem key={item.id} {...item} /> )
+                notesToDisplay.map((item) => (
+                    <MordernItem key={item.id} {...item} />
+                ))
             }
         </ul>
     );

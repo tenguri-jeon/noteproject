@@ -36,7 +36,6 @@ const Edit = () => {
 
     const deleteCon = () => {
         dispatch(onDel(Number(id)));
-        console.log(id) 
         navigate('/'); 
     };
 
