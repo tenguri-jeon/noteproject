@@ -24,25 +24,16 @@ connection.connect((err) => {
     console.log('MySQL에 연결되었습니다! ID:', connection.threadId);
 });
 
-// 데이터 조회
-// app.get('/', (req, res) => {
-//     connection.query('SELECT * FROM noteProject', (err, results) => {
-//         if (err) {
-//             console.error('쿼리 실행 오류:', err); 
-//             return res.status(500).json({ error: '쿼리 실행 오류', details: err }); // 오류 세부사항 반환
-//         }
-//         res.json(results); 
-//     });
-// });
+
 app.get('/', (req, res) => {
-    const query = 'SELECT * FROM noteProject'; // MySQL에서 모든 노트를 가져옴
+    const query = 'SELECT * FROM noteProject'; 
     connection.query(query, (err, results) => {
       if (err) {
         console.error('Database error:', err);
         return res.status(500).send('Failed to fetch notes');
       }
     res.json(results); 
-});
+    });
 });
 
 //데이터 삭제
@@ -63,7 +54,6 @@ app.delete('/delete-note/:id', (req, res) => {
 app.post('/add-note', (req, res) => {
     const { title, content, date } = req.body;
 
-    // MySQL에 데이터 삽입
     const query = 'INSERT INTO noteProject (title, content, date) VALUES (?, ?, ?)';
     connection.query(query, [title, content, date], (err, result) => {
       if (err) {
@@ -81,6 +71,34 @@ app.post('/add-note', (req, res) => {
     res.status(201).json(newNote);
     });
 });
+
+// 데이터 수정
+app.put('/edit-notes/:id', (req, res) => {
+    const { id } = req.params; // URL에서 ID 받기
+    const { title, content, date } = req.body; // 수정할 데이터 받기
+  
+    console.log(title, content, date); // 데이터 확인
+  
+    // SQL 쿼리에서 , 위치 수정
+    const query = 'UPDATE noteProject SET title = ?, content = ?, date = ? WHERE id = ?';
+  
+    connection.query(query, [title, content, date, id], (err, result) => {
+      if (err) {
+        console.log('수정 오류:', err);
+        return res.status(500).send('Failed to update note');
+      }
+  
+      // 수정이 성공하면 수정된 데이터 반환
+      res.status(200).json({
+        id,
+        title,
+        content,
+        date,
+      });
+    });
+  });
+  
+
 
 
 // 서버 실행

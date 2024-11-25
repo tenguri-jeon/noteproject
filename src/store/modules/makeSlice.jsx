@@ -26,19 +26,11 @@ export const makeListSlice = createSlice({
     onAdd: (state, action) => {
         const today = new Date();
         const date = today.toISOString().split('T')[0];
-    //   const newNote = {
-    //     id: state.noteData.length + 1,
-    //     title: action.payload.title,
-    //     content: action.payload.content,
-    //     date: action.payload.date,
-    //   };
-    //   state.noteData.push(newNote);
-        // 액션 페이로드로 받은 title, content, date를 서버에 보냄
         axios
         .post('http://localhost:3000/add-note', {
           title: action.payload.title,
           content: action.payload.content,
-          date: action.payload.date,
+          date: date,
         })
         .then(() => {
           alert('노트가 추가되었습니다!');
@@ -56,7 +48,6 @@ export const makeListSlice = createSlice({
         axios
           .delete(`http://localhost:3000/delete-note/${noteId}`)
           .then((response) => {
-            // state.noteData = state.noteData.filter((item) => item.id !== noteId);
             alert('삭제 되었습니다!');
           })
           .catch((error) => {
@@ -65,10 +56,16 @@ export const makeListSlice = createSlice({
           });
     },
     onEdit: (state, action) => {
-      const noteId = action.payload.id;
-      state.noteData = state.noteData.map(item => 
-        item.id === noteId ? { ...item, ...action.payload, date: `${action.payload.date} 수정` } : item
-      );
+        const { id, title, content, date } = action.payload;
+        axios
+            .put(`http://localhost:3000/edit-notes/${id}`, { title, content, date })
+            .then(() => {
+                alert('노트가 수정되었습니다!');
+            })
+            .catch((error) => {
+                console.error('편집 오류:', error);
+                alert('서버에서 노트 편집에 실패했습니다.');
+        });
     },
     onCurrent: (state, action) => {
       state.current = action.payload;
