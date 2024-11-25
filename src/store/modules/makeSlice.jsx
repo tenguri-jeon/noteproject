@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 // 데이터 가져오기
 export const fetchNotes = createAsyncThunk(
@@ -23,14 +24,31 @@ export const makeListSlice = createSlice({
   initialState,
   reducers: {
     onAdd: (state, action) => {
-      const newNote = {
-        id: state.noteData.length + 1,
-        title: action.payload.title,
-        content: action.payload.content,
-        date: action.payload.date,
-      };
-      state.noteData.push(newNote);
-    },
+        const today = new Date();
+        const date = today.toISOString().split('T')[0];
+    //   const newNote = {
+    //     id: state.noteData.length + 1,
+    //     title: action.payload.title,
+    //     content: action.payload.content,
+    //     date: action.payload.date,
+    //   };
+    //   state.noteData.push(newNote);
+        // 액션 페이로드로 받은 title, content, date를 서버에 보냄
+        axios
+        .post('http://localhost:3000/add-note', {
+          title: action.payload.title,
+          content: action.payload.content,
+          date: action.payload.date,
+        })
+        .then(() => {
+          alert('노트가 추가되었습니다!');
+        })
+        .catch((error) => {
+          console.error('노트 추가 실패:', error);
+          alert('서버에서 노트를 추가하는 데 오류가 발생했습니다.');
+        });
+
+      },
     onDel: (state, action) => {
         const noteId = action.payload;
         
@@ -38,7 +56,6 @@ export const makeListSlice = createSlice({
         axios
           .delete(`http://localhost:3000/delete-note/${noteId}`)
           .then((response) => {
-            console.log(response.data);  
             // state.noteData = state.noteData.filter((item) => item.id !== noteId);
             alert('삭제 되었습니다!');
           })
