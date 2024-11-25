@@ -16,6 +16,10 @@ const connection = mysql.createConnection({
     database: 'note'
 });
 
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).send();  
+});
+
 connection.connect((err) => {
     if (err) {
         console.error('MySQL 연결 오류:', err.stack);
