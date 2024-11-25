@@ -23,9 +23,8 @@ const MordernList = () => {
 
         updateTime(); 
         const intervalId = setInterval(updateTime, 60000); 
-
         return () => clearInterval(intervalId); 
-    }, []);
+    }, );
 
     const today = new Date();
     const week = ['일', '월', '화', '수', '목', '금', '토'];
