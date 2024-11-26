@@ -2,21 +2,28 @@ version: '3'
 
 services:
   backend:
-    type: node
-    port: 3000
+    image: node:16
     build:
-      source: ./api  
-      command: |
-        npm install
-        node server.js
-    env:
-      DATABASE_HOST: <your-database-host>
-      DATABASE_USER: <your-database-user>
-      DATABASE_PASSWORD: <your-database-password>
-      DATABASE_NAME: <your-database-name>
+      context: ./api
+    ports:
+      - "3000:3000"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 12345
+      MYSQL_DATABASE: note
+    depends_on:
+      - mysql
 
-  frontend:
-    type: static
-    build:
-      source: ./build  
-    port: 80
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: note
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
