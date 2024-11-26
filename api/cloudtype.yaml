@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  backend:
+    type: node
+    port: 3000
+    build:
+      source: ./api  
+      command: |
+        npm install
+        node server.js
+    env:
+      DATABASE_HOST: <your-database-host>
+      DATABASE_USER: <your-database-user>
+      DATABASE_PASSWORD: <your-database-password>
+      DATABASE_NAME: <your-database-name>
+
+  frontend:
+    type: static
+    build:
+      source: ./build  
+    port: 80
