@@ -25,8 +25,22 @@ connection.connect((err) => {
     console.log('MySQL에 연결되었습니다! ID:', connection.threadId);
 });
 
+// 연결 상태를 체크하고, 연결이 끊어졌으면 다시 연결하는 로직 추가
+function ensureConnection() {
+    if (connection.state === 'disconnected') {
+        connection.connect((err) => {
+            if (err) {
+                console.error('MySQL 연결 오류:', err.stack);
+                return;
+            }
+            console.log('MySQL에 연결되었습니다! ID:', connection.threadId);
+        });
+    }
+}
+
 // 데이터 조회
 app.get('/', (req, res) => {
+    ensureConnection(); // 연결 상태 확인
     const query = 'SELECT * FROM noteProject';
     connection.query(query, (err, results) => {
         if (err) {
