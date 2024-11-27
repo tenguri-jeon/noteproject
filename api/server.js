@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // MySQL 연결
 const connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST || 'localhost',  
+    host: process.env.MYSQL_HOST || '34.64.184.142',  
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || '12345',
     database: process.env.MYSQL_DATABASE || 'note'
