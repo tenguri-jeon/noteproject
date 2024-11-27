@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // MySQL 연결
 const connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST || 'mysql',  
+    host: process.env.MYSQL_HOST || 'localhost',  
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || '12345',
     database: process.env.MYSQL_DATABASE || 'note'
@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
     connection.query(query, (err, results) => {
         if (err) {
             console.error('Database error:', err);
-            return res.status(500).send('Failed to fetch notes');
+            return res.status(500).send(`Database error: ${err.message}`); 
         }
 
         // 날짜를 YYYY-MM-DD 형식으로 포맷
