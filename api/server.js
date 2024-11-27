@@ -10,8 +10,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // MySQL 연결
 const connection = mysql.createConnection({
-    host: '127.0.0.1',  // IP 주소
-    port: 3306,              // MySQL 포트 (기본값은 3306)
+    host: 'localhost',  
+    port: 3306,       
     user: 'root',
     password: '12345',
     database: 'note'
