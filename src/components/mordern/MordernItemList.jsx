@@ -12,7 +12,7 @@ const MordernItemList = () => {
 
     useEffect(() => {
         dispatch(fetchNotes());
-    }, [dispatch, notes, filteredData]);
+    }, [dispatch]);
 
     if (loading) {
         return <div>Loading...</div>;

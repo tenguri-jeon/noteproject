@@ -3,6 +3,7 @@ import { MakeNoteComponents } from './makenote';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { onAdd } from '../../store/modules/makeSlice';
+import { fetchNotes } from '../../store/modules/action';
 import { darkTheme, lightTheme } from '../../theme/theme';
 
 
@@ -28,6 +29,7 @@ const MakeNote = () => {
     const saveData = () => {
         if(title && content) {
             dispatch(onAdd(text))
+            dispatch(fetchNotes());
             navigate('/')
         }else{
             alert('내용을 모두 입력 해 주세요')

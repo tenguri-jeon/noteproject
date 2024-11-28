@@ -7,8 +7,11 @@ export const FETCH_NOTES_LOADING = 'FETCH_NOTES_LOADING';
 export const fetchNotes = () => async (dispatch) => {
   dispatch({ type: FETCH_NOTES_LOADING });
 
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000'; 
+
   try {
-    const response = await axios.get('https://port-0-testserver-m40ng5qod08f0898.sel4.cloudtype.app/'); 
+    const response = await axios.get(`${apiUrl}/`);  
+
     dispatch({
       type: FETCH_NOTES,
       payload: response.data,

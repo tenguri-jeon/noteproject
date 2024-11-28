@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { EditCompoenet } from './edit';
 import { onDel, onEdit } from '../../store/modules/makeSlice';
 import { darkTheme, lightTheme } from '../../theme/theme';
+import { fetchNotes } from '../../store/modules/action';
+
 
 const Edit = () => {
     const navigate = useNavigate();
@@ -18,8 +20,8 @@ const Edit = () => {
 
     state.noteData = state.noteData.map((item) => 
         item.id === noteId ? { ...item, title, content } : item
-    );
-},
+        );
+    },
         title: current.title,
         content: current.content,
     });
@@ -36,12 +38,14 @@ const Edit = () => {
 
     const deleteCon = () => {
         dispatch(onDel(Number(id)));
+        dispatch(fetchNotes());
         navigate('/'); 
     };
 
     const EditCon = () => {
         const updatedNote = { id: Number(id), title, content };
         dispatch(onEdit(updatedNote));
+        dispatch(fetchNotes());
         navigate('/')
     }
 

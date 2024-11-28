@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "homepage": "http://.",
+  "proxy": "http://localhost:3000",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
