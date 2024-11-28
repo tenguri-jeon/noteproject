@@ -4,7 +4,7 @@ import axios from 'axios';
 export const fetchNotes = createAsyncThunk(
   'notes/fetchNotes', 
   async () => {
-    const response = await axios.get('http://localhost:3000'); 
+    const response = await axios.get('https://port-0-testserver-m40ng5qod08f0898.sel4.cloudtype.app/'); 
     return response.data; 
   }
 );
@@ -25,10 +25,11 @@ export const makeListSlice = createSlice({
         const today = new Date();
         const date = today.toISOString().split('T')[0];
         axios
-        .post('http://localhost:3000/add-note', {
+        .post('https://port-0-testserver-m40ng5qod08f0898.sel4.cloudtype.app/add-note', {
           title: action.payload.title,
           content: action.payload.content,
           date: date,
+          id : state.notes.length+1,
         })
         .then(() => {
           alert('노트가 추가되었습니다!');
@@ -43,7 +44,7 @@ export const makeListSlice = createSlice({
         const noteId = action.payload;
         
         axios
-          .delete(`http://localhost:3000/delete-note/${noteId}`)
+          .delete(`https://port-0-testserver-m40ng5qod08f0898.sel4.cloudtype.app/delete-note/${noteId}`)
           .then((response) => {
             alert('삭제 되었습니다!');
           })
@@ -55,7 +56,7 @@ export const makeListSlice = createSlice({
     onEdit: (state, action) => {
         const { id, title, content, date } = action.payload;
         axios
-            .put(`http://localhost:3000/edit-notes/${id}`, { title, content, date })
+            .put(`https://port-0-testserver-m40ng5qod08f0898.sel4.cloudtype.app/edit-notes/${id}`, { title, content, date })
             .then(() => {
                 alert('노트가 수정되었습니다!');
             })
@@ -68,12 +69,12 @@ export const makeListSlice = createSlice({
       state.current = action.payload;
     },
     onSearch: (state, action) => {
-        const searchTerm = action.payload.toLowerCase(); 
+        const searchTerm = action.payload.toLowerCase();
         if (searchTerm === '') {
             state.filteredData = state.notes;  
         } else{
             state.filteredData = state.notes.filter(item =>
-                item.title.toLowerCase().includes(searchTerm)  
+            item.title.toLowerCase().includes(searchTerm)  
             );
             if(state.filteredData.length === 0){
                 state.filteredData = [{ id: '', title: "검색 결과가 없습니다.", content: "", date: "" }];
@@ -85,6 +86,8 @@ export const makeListSlice = createSlice({
         state.filteredData = state.filteredData.sort((a, b) =>
           a[action.payload] > b[action.payload] ? 1 : -1
         );
+      }else{
+        state.filteredData = state.notes
       }
     },
   },
@@ -92,6 +95,7 @@ export const makeListSlice = createSlice({
     builder
       .addCase(fetchNotes.fulfilled, (state, action) => {
         state.notes = action.payload; 
+        state.filteredData = action.payload;
       })
       .addCase(fetchNotes.rejected, (state, action) => {
         state.error = action.error.message; 
